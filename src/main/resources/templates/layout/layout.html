@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Pest Analysis Platform</title>
+
+    <!-- 공통 CSS 파일 -->
+    <link rel="stylesheet" href="/css/style.css" th:href="@{/css/style.css}">
+  </head>
+  <body>
+    <!-- 공통 헤더 -->
+    <header>
+      <nav>
+        <ul>
+          <li><a href="/" th:href="@{/}">Home</a></li>
+          <li><a href="/upload" th:href="@{/upload}">Upload Image</a></li>
+          <li><a href="/about" th:href="@{/about}">About</a></li>
+          <li><a href="/contact" th:href="@{/contact}">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- 본문 영역 -->
+    <main>
+      <div th:replace="${content}">Content will be here</div>
+    </main>
+
+    <!-- 공통 푸터 -->
+    <footer>
+      <p>&copy; 2024 Pest Analysis Platform</p>
+      <p>Contact us at: info@pestanalysis.com</p>
+    </footer>
+
+    <!-- 공통 JavaScript 파일 -->
+    <script src="/js/script.js" th:src="@{/js/script.js}"></script>
+  </body>
+</html>
