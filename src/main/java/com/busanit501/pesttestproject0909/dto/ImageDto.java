@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ImageDto {
     private Long id;
-    private String imageUrl;
+    private String fileName;  // 파일 이름
     private Long userId;  // 이미지를 업로드한 사용자 ID
 }

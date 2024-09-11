@@ -13,9 +13,9 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     // 사용자 ID로 이미지 목록 조회
     List<Image> findByUserId(Long userId);
 
-    // 이미지 URL로 이미지 검색
-    Optional<Image> findByImageUrl(String imageUrl);
+    // 파일 이름으로 이미지 검색
+    Optional<Image> findByFileName(String fileName);
 
-    // 이미지 URL이 존재하는지 확인
-    boolean existsByImageUrl(String imageUrl);
+    // 파일 이름이 존재하는지 확인
+    boolean existsByFileName(String fileName);
 }

@@ -12,16 +12,16 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // 기본 키 생성 전략 설정
     private Long id;
 
-    private String imageUrl;
-    private Long userId;  // 사용자 ID 추가
+    private String fileName;  // 파일 이름을 저장할 필드
+    private Long userId;  // 사용자 ID
 
     // 기본 생성자
     public Image() {}
 
     // 생성자
-    public Image(Long id, String imageUrl, Long userId) {
+    public Image(Long id, String fileName, Long userId) {
         this.id = id;
-        this.imageUrl = imageUrl;
+        this.fileName = fileName;
         this.userId = userId;
     }
 
@@ -34,12 +34,12 @@ public class Image {
         this.id = id;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public Long getUserId() {

@@ -43,7 +43,7 @@ public class ReportService {
         Report savedReport = reportRepository.save(report);
 
         // 저장된 보고서를 DTO로 반환
-        return new ReportDto(savedReport.getId(), image.getImageUrl(), analysisResult);
+        return new ReportDto(savedReport.getId(), image.getFileName(), analysisResult);
     }
 
     /**
@@ -52,7 +52,7 @@ public class ReportService {
     public List<ReportDto> getReportsByUserId(Long userId) {
         List<Report> reports = reportRepository.findByUserId(userId);
         return reports.stream()
-                .map(report -> new ReportDto(report.getId(), report.getImage().getImageUrl(), report.getAnalysisResult()))
+                .map(report -> new ReportDto(report.getId(), report.getImage().getFileName(), report.getAnalysisResult()))
                 .collect(Collectors.toList());
     }
 
@@ -62,7 +62,7 @@ public class ReportService {
     public ReportDto getReportById(Long reportId) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
-        return new ReportDto(report.getId(), report.getImage().getImageUrl(), report.getAnalysisResult());
+        return new ReportDto(report.getId(), report.getImage().getFileName(), report.getAnalysisResult());
     }
 
     /**

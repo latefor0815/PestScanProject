@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Upload</title>
+  <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Upload Image</h1>
+
+<!-- 이미지 업로드 폼 -->
+<form th:action="@{/images/upload}" method="post" enctype="multipart/form-data">
+  <label for="file">Select Image:</label>
+  <input type="file" id="file" name="file" accept="image/*" required>
+
+  <label for="userId">User ID:</label>
+  <input type="number" id="userId" name="userId" required>
+
+  <button type="submit">Upload</button>
+</form>
+
+<!-- 업로드 성공 메시지 표시 -->
+<p th:text="${message}" th:if="${message != null}"></p>
+
+<script src="/js/script.js" th:src="@{/js/script.js}"></script>
+</body>
+</html>
