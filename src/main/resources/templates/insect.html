@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insect Management</title>
+    <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<header>
+    <nav>
+        <ul>
+            <li><a href="/" th:href="@{/}">Home</a></li>
+            <li><a href="/images/upload" th:href="@{/images/upload}">Upload Image</a></li>
+            <li><a href="/about" th:href="@{/about}">About</a></li>
+            <li><a href="/contact" th:href="@{/contact}">Contact</a></li>
+            <li th:if="${session.loggedInUser == null}">
+                <a href="/users/login" th:href="@{/users/login}">Login</a>
+            </li>
+            <li th:if="${session.loggedInUser == null}">
+                <a href="/users/signup" th:href="@{/users/signup}">Sign Up</a>
+            </li>
+            <li th:if="${session.loggedInUser != null}">
+                <span th:text="${session.loggedInUser.username}">Username</span>
+                <a href="/users/logout" th:href="@{/users/logout}">Logout</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <h1>Insect Management</h1>
+
+    <!-- 해충 목록 표시 -->
+    <div th:if="${insectList != null}">
+        <h2>All Insects</h2>
+        <ul>
+            <li th:each="insect : ${insectList}">
+                <p th:text="'Name: ' + insect.name"></p>
+                <p th:text="'Species: ' + insect.species"></p>
+                <p th:text="'Description: ' + insect.description"></p>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 개별 해충 정보 표시 -->
+    <div th:if="${insect != null}">
+        <h2>Insect Details</h2>
+        <p th:text="'Name: ' + insect.name"></p>
+        <p th:text="'Species: ' + insect.species"></p>
+        <p th:text="'Description: ' + insect.description"></p>
+    </div>
+
+    <!-- 해충 추가 폼 -->
+    <div>
+        <h2>Add New Insect</h2>
+        <form th:action="@{/insects/create}" method="post">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="species">Species:</label>
+            <input type="text" id="species" name="species" required>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required></textarea>
+            <button type="submit">Add Insect</button>
+        </form>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2024 Pest Analysis Platform</p>
+</footer>
+
+</body>
+</html>
