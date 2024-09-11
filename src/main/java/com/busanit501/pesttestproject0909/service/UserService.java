@@ -30,8 +30,12 @@ public class UserService {
     }
 
     // 이메일로 로그인하는 로직
-    public boolean loginUser(String email, String password) {
+    public User loginUser(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
-        return user.isPresent() && user.get().getPassword().equals(password);
+        if (user.isPresent() && user.get().getPassword().equals(password)) {
+            return user.get();
+        }
+        return null;
     }
+
 }
