@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}">Pest Analysis Platform</title>
 
     <!-- 공통 CSS 파일 -->
-    <link rel="stylesheet" href="/css/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}">
   </head>
   <body>
     <!-- 공통 헤더 -->
@@ -17,6 +19,8 @@
           <li><a href="/upload" th:href="@{/upload}">Upload Image</a></li>
           <li><a href="/about" th:href="@{/about}">About</a></li>
           <li><a href="/contact" th:href="@{/contact}">Contact</a></li>
+          <li><a href="/users/login" th:href="@{/users/login}">Login</a></li>
+          <li><a href="/users/signup" th:href="@{/users/signup}">Sign Up</a></li>
         </ul>
       </nav>
     </header>

@@ -1,6 +1,5 @@
 package com.busanit501.pesttestproject0909.controller;
 
-import com.busanit501.pesttestproject0909.dto.LoginDto;
 import com.busanit501.pesttestproject0909.dto.UserDto;
 import com.busanit501.pesttestproject0909.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +20,5 @@ public class UserController {
     public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
         userService.registerUser(userDto);
         return ResponseEntity.ok("User registered successfully");
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginDto loginDto) {
-        String token = userService.loginUser(loginDto);
-        return ResponseEntity.ok(token);
     }
 }

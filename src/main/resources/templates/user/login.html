@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <html lang="ko"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:th="www.thymeleaf.org"
-      layout:decorate="~{layout/layout.html}"
->
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head(title='Login Page')"></head>
 <body>
-<div layout:fragment="content">
+<div th:replace="layout/layout :: header"></div>
 
-
+<main>
   <div class="card-header">
     <h2>LOGIN Page</h2>
   </div>
   <div class="card-body">
     <form th:action="@{/users/login}" method="post">
       <div class="input-group mb-3">
-        <input type="text" class="form-control" name="username" id="username" placeholder="username 입력해주세요" />
+        <input type="email" class="form-control" name="email" id="email" placeholder="이메일을 입력해주세요" required />
       </div>
       <div class="input-group mb-3">
-        <input type="password"  class="form-control" name="password" id="password" placeholder="PASSWORD 입력해주세요"/>
+        <input type="password" class="form-control" name="password" id="password" placeholder="비밀번호를 입력해주세요" required />
       </div>
       <button class="btn btn-primary w-100 submitBtn" type="submit">Login</button>
     </form>
   </div>
+</main>
 
+<div th:replace="layout/layout :: footer"></div>
 
-</div>
-<!--자바스크립트 추가하는 영역-->
-<script layout:fragment="javascript" th:inline="javascript">
-
-</script>
 </body>
 </html>
