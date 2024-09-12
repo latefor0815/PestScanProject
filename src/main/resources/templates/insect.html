@@ -33,10 +33,12 @@
 
 <main>
     <h1>Insect Management</h1>
+    <a>해당 페이지는 본인이 처음보는 곤충을 발견하면 등록하는 곳입니다.</a>
 
     <!-- 해충 목록 표시 -->
     <div th:if="${insectList != null}">
         <h2>All Insects</h2>
+        <a>해충 목록</a>
         <ul>
             <li th:each="insect : ${insectList}">
                 <p th:text="'Name: ' + insect.name"></p>
@@ -48,7 +50,7 @@
 
     <!-- 개별 해충 정보 표시 -->
     <div th:if="${insect != null}">
-        <h2>Insect Details</h2>
+        <h2>개별 해충 정보</h2>
         <p th:text="'Name: ' + insect.name"></p>
         <p th:text="'Species: ' + insect.species"></p>
         <p th:text="'Description: ' + insect.description"></p>
@@ -56,7 +58,7 @@
 
     <!-- 해충 추가 폼 -->
     <div>
-        <h2>Add New Insect</h2>
+        <h2>해충을 추가해주세요.</h2>
         <form th:action="@{/insects/create}" method="post">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>

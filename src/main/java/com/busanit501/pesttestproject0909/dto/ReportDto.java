@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportDto {
-    private Long reportId;
+    private Long id;
+    private Long userId;
+    private String imageName;
     private String insectName;
     private String analysisResult;
 }

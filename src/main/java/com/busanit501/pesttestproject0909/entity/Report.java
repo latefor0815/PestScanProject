@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Report {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,6 +23,12 @@ public class Report {
     @JoinColumn(name = "image_id", nullable = false)
     private Image image;
 
+    @ManyToOne
+    @JoinColumn(name = "insect_id", nullable = false)
+    private Insect insect;
+
     @Column
     private String analysisResult;
+
+    // getters, setters, constructors
 }

@@ -1,66 +1,80 @@
 package com.busanit501.pesttestproject0909.controller;
 
 import com.busanit501.pesttestproject0909.dto.ReportDto;
+import com.busanit501.pesttestproject0909.entity.User;
 import com.busanit501.pesttestproject0909.service.ReportService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/reports")
+@Controller
+@RequestMapping("/reports")
 public class ReportController {
 
     @Autowired
     private ReportService reportService;
 
-    /**
-     * 특정 사용자의 모든 보고서를 조회하는 API
-     * @param userId 사용자 ID
-     * @return 사용자의 보고서 목록
-     */
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ReportDto>> getUserReports(@PathVariable Long userId) {
-        List<ReportDto> reports = reportService.getReportsByUserId(userId);
-        return ResponseEntity.ok(reports);
+    @GetMapping({"/list", "/my-reports"})
+    public String listReports(HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/users/login";
+        }
+        List<ReportDto> reports = reportService.getReportsByUserId(loggedInUser.getId());
+        model.addAttribute("reports", reports);
+        return "report";
     }
 
-    /**
-     * 특정 보고서를 조회하는 API
-     * @param reportId 보고서 ID
-     * @return 보고서 정보
-     */
-    @GetMapping("/{reportId}")
-    public ResponseEntity<ReportDto> getReportById(@PathVariable Long reportId) {
-        ReportDto report = reportService.getReportById(reportId);
-        return ResponseEntity.ok(report);
-    }
-
-    /**
-     * 보고서를 생성하는 API
-     * @param userId 사용자 ID
-     * @param imageId 이미지 ID
-     * @param analysisResult 분석 결과
-     * @return 생성된 보고서 정보
-     */
     @PostMapping("/create")
-    public ResponseEntity<ReportDto> createReport(@RequestParam Long userId,
-                                                  @RequestParam Long imageId,
-                                                  @RequestParam String analysisResult) {
-        ReportDto createdReport = reportService.saveReport(userId, imageId, analysisResult);
+    public ResponseEntity<ReportDto> createReport(@RequestParam Long imageId,
+                                                  @RequestParam Long id,
+                                                  @RequestParam String analysisResult,
+                                                  HttpSession session) {
+        System.out.println("Received parameters: imageId=" + imageId + ", id=" + id + ", analysisResult=" + analysisResult);
+
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            System.out.println("Session ID: " + session.getId() + ", User not logged in");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        System.out.println("Creating report for user: " + loggedInUser.getEmail() + ", Session ID: " + session.getId());
+
+        ReportDto createdReport = reportService.saveReport(loggedInUser.getId(), imageId, id, analysisResult);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReport);
     }
 
-    /**
-     * 보고서를 삭제하는 API
-     * @param reportId 삭제할 보고서 ID
-     * @return 삭제 성공 메시지
-     */
+    @GetMapping("/{reportId}")
+    public ResponseEntity<ReportDto> getReportById(@PathVariable Long reportId, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        ReportDto report = reportService.getReportByIdAndUserId(reportId, loggedInUser.getId());
+        return report != null ? ResponseEntity.ok(report) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     @DeleteMapping("/{reportId}")
-    public ResponseEntity<String> deleteReport(@PathVariable Long reportId) {
-        reportService.deleteReport(reportId);
-        return ResponseEntity.ok("Report deleted successfully");
+    public ResponseEntity<String> deleteReport(@PathVariable Long reportId, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        boolean isDeleted = reportService.deleteReport(reportId, loggedInUser.getId());
+        return isDeleted ? ResponseEntity.ok("Report deleted successfully") : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String message = String.format("'%s' should be a valid %s and '%s' isn't",
+                ex.getName(), ex.getRequiredType().getSimpleName(), ex.getValue());
+        System.err.println("Type mismatch error in ReportController: " + message);
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 }
