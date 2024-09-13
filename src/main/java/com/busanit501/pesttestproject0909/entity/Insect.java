@@ -1,9 +1,8 @@
 package com.busanit501.pesttestproject0909.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 
 @Entity
@@ -16,6 +15,10 @@ public class Insect {
     private String name;
     private String species;
     private String description;
+
+    // Report와 일대다 관계 설정
+    @OneToMany(mappedBy = "insect", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> reports;
 
     // 기본 생성자
     public Insect() {}
@@ -59,5 +62,14 @@ public class Insect {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    // reports 필드의 Getter 및 Setter
+    public List<Report> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
     }
 }

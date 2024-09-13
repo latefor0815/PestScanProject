@@ -4,17 +4,18 @@
   <meta charset="UTF-8">
   <title>리포트 목록</title>
   <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
+    /* 기존 스타일 유지 */
+    .delete-form {
+      display: inline;
     }
-    th, td {
-      border: 1px solid black;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #f2f2f2;
+    .delete-button {
+      background: none;
+      border: none;
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 0;
+      font: inherit;
     }
   </style>
 </head>
@@ -41,8 +42,10 @@
     <td th:text="${report.insectName}"></td>
     <td th:text="${report.analysisResult}"></td>
     <td>
-      <a th:href="@{/reports/delete/{id}(id=${report.id})}"
-         onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+      <form th:action="@{/reports/delete/{id}(id=${report.id})}" method="post" class="delete-form">
+        <input type="hidden" name="_method" value="DELETE"/>
+        <button type="submit" class="delete-button" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+      </form>
     </td>
   </tr>
   </tbody>

@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.util.List;
+
 @Entity
 public class Image {
 
@@ -14,6 +16,10 @@ public class Image {
 
     private String fileName;  // 파일 이름을 저장할 필드
     private Long userId;  // 사용자 ID
+
+    // Report와 일대다 관계 설정
+    @OneToMany(mappedBy = "image", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> reports;
 
     // 기본 생성자
     public Image() {}
@@ -48,5 +54,14 @@ public class Image {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    // reports 필드의 Getter 및 Setter
+    public List<Report> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
     }
 }

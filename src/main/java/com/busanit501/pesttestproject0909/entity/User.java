@@ -1,9 +1,8 @@
 package com.busanit501.pesttestproject0909.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 
 @Entity
@@ -16,6 +15,10 @@ public class User {
     private String username;
     private String email;
     private String password;
+
+    // User와 Report의 일대다 관계 설정
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> reports;
 
     // 기본 생성자
     public User() {}
@@ -59,5 +62,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    // reports 필드의 Getter 및 Setter
+    public List<Report> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
     }
 }

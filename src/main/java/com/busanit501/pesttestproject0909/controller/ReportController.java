@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.util.List;
@@ -97,24 +98,18 @@ public class ReportController {
         }
     }
 
-    @PostMapping("/delete/{reportId}")
-    public String deleteReport(@PathVariable Long reportId, HttpSession session, Model model) {
+    @PostMapping("/delete/{id}")  // @DeleteMapping 대신 @PostMapping 사용
+    public String deleteReport(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) {
             return "redirect:/users/login";
         }
 
-        try {
-            boolean isDeleted = reportService.deleteReport(reportId, loggedInUser.getId());
-            if (isDeleted) {
-                logger.info("리포트 삭제 성공: ID {}", reportId);
-                model.addAttribute("message", "리포트가 성공적으로 삭제되었습니다.");
-            } else {
-                model.addAttribute("error", "리포트를 찾을 수 없습니다.");
-            }
-        } catch (Exception e) {
-            logger.error("리포트 삭제 중 오류 발생", e);
-            model.addAttribute("error", "리포트 삭제 중 오류가 발생했습니다: " + e.getMessage());
+        boolean isDeleted = reportService.deleteReport(id, loggedInUser.getId());
+        if (isDeleted) {
+            redirectAttributes.addFlashAttribute("message", "리포트가 성공적으로 삭제되었습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "리포트 삭제 중 오류가 발생했습니다.");
         }
         return "redirect:/reports/list";
     }

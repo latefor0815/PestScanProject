@@ -85,15 +85,21 @@ public class ReportService {
     @Transactional
     public boolean deleteReport(Long reportId, Long userId) {
         logger.info("Attempting to delete report with ID: {} for user ID: {}", reportId, userId);
-        Report report = reportRepository.findByIdAndUserId(reportId, userId)
-                .orElse(null);
-        if (report != null) {
-            reportRepository.delete(report);
-            logger.info("Deleted report with ID: {}", reportId);
-            return true;
-        }
-        logger.warn("Report not found for deletion. ID: {}, User ID: {}", reportId, userId);
-        return false;
+        return reportRepository.findByIdAndUserId(reportId, userId)
+                .map(report -> {
+                    // 관련된 엔티티들의 연관관계 처리
+                    report.getImage().getReports().remove(report);
+                    report.getInsect().getReports().remove(report);
+                    report.getUser().getReports().remove(report);
+
+                    reportRepository.delete(report);
+                    logger.info("Deleted report with ID: {}", reportId);
+                    return true;
+                })
+                .orElseGet(() -> {
+                    logger.warn("Report not found for deletion. ID: {}, User ID: {}", reportId, userId);
+                    return false;
+                });
     }
 
     private ReportDto convertToDto(Report report) {
