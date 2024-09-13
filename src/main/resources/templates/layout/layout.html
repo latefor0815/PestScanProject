@@ -24,6 +24,7 @@
 
 
 
+
           <!-- 로그인 여부에 따라 로그인/로그아웃 및 회원가입 버튼을 동적으로 표시 -->
           <li th:if="${session.loggedInUser == null}">
             <a href="/users/login" th:href="@{/users/login}">Login</a>

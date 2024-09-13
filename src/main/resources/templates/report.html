@@ -1,30 +1,58 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>보고서 리스트</title>
+  <title>리포트 목록</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
 </head>
 <body>
-<h1>보고서 리스트</h1>
+<h1>리포트 목록</h1>
 
-<table border="1">
+<div th:if="${message}" th:text="${message}" style="color: green;"></div>
+<div th:if="${error}" th:text="${error}" style="color: red;"></div>
+
+<table th:if="${reports != null and not #lists.isEmpty(reports)}">
   <thead>
   <tr>
-    <th>보고서 ID</th>
+    <th>ID</th>
     <th>이미지 이름</th>
     <th>곤충 이름</th>
     <th>분석 결과</th>
+    <th>작업</th>
   </tr>
   </thead>
   <tbody>
   <tr th:each="report : ${reports}">
-    <td th:text="${report.id}">Report ID</td>
-    <td th:text="${report.imageName}">Image Name</td>
-    <td th:text="${report.insectName}">Insect Name</td>
-    <td th:text="${report.analysisResult}">Analysis Result</td>
+    <td th:text="${report.id}"></td>
+    <td th:text="${report.imageName}"></td>
+    <td th:text="${report.insectName}"></td>
+    <td th:text="${report.analysisResult}"></td>
+    <td>
+      <a th:href="@{/reports/delete/{id}(id=${report.id})}"
+         onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+    </td>
   </tr>
   </tbody>
 </table>
+
+<div th:if="${reports == null or #lists.isEmpty(reports)}">
+  <p>현재 등록된 리포트가 없습니다.</p>
+</div>
+
+<a href="/">홈으로</a>
+
 </body>
 </html>

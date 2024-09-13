@@ -1,7 +1,13 @@
 package com.busanit501.pesttestproject0909.controller;
 
 import com.busanit501.pesttestproject0909.dto.ImageDto;
+import com.busanit501.pesttestproject0909.dto.ReportDto;
+import com.busanit501.pesttestproject0909.entity.User;
 import com.busanit501.pesttestproject0909.service.ImageService;
+import com.busanit501.pesttestproject0909.service.ReportService;
+import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,8 +21,13 @@ import java.util.List;
 @RequestMapping("/images")
 public class ImageController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ImageController.class);
+
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private ReportService reportService;
 
     /**
      * 모든 이미지 목록 조회
@@ -61,17 +72,56 @@ public class ImageController {
      */
     @PostMapping("/upload")
     public String uploadImage(@RequestParam("file") MultipartFile file,
-                              @RequestParam("userId") Long userId,
-                              Model model) {
+                              Model model,
+                              HttpSession session) {
         try {
-            ImageDto uploadedImage = imageService.uploadImage(file, userId);
+            User loggedInUser = (User) session.getAttribute("loggedInUser");
+            if (loggedInUser == null) {
+                logger.warn("User not logged in while attempting to upload image");
+                return "redirect:/users/login";
+            }
+
+            ImageDto uploadedImage = imageService.uploadImage(file, loggedInUser.getId());
             model.addAttribute("uploadedImage", uploadedImage);
-            model.addAttribute("message", "Image uploaded successfully!");
+
+            // 리포트 생성 로직
+            ReportDto createdReport = reportService.createReportForImage(loggedInUser.getId(), uploadedImage.getId());
+            logger.info("Created report: {}", createdReport);
+
+            model.addAttribute("message", "Image uploaded successfully and report created!");
         } catch (IOException e) {
-            model.addAttribute("message", "Failed to upload image.");
+            logger.error("Failed to upload image", e);
+            model.addAttribute("error", "Failed to upload image: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred during image upload", e);
+            model.addAttribute("error", "An unexpected error occurred: " + e.getMessage());
         }
 
-        // 업로드 성공 후 다시 업로드 페이지로 이동
         return "redirect:/images/upload";
+    }
+
+    /**
+     * 이미지 삭제
+     */
+    @PostMapping("/delete/{id}")
+    public String deleteImage(@PathVariable Long id, HttpSession session, Model model) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/users/login";
+        }
+
+        try {
+            boolean deleted = imageService.deleteImage(id, loggedInUser.getId());
+            if (deleted) {
+                model.addAttribute("message", "Image deleted successfully");
+            } else {
+                model.addAttribute("error", "Failed to delete image. It may not exist or you may not have permission.");
+            }
+        } catch (Exception e) {
+            logger.error("Error occurred while deleting image", e);
+            model.addAttribute("error", "An error occurred while deleting the image: " + e.getMessage());
+        }
+
+        return "redirect:/images";
     }
 }

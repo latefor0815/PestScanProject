@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us</title>
+  <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<h1>Contact Us</h1>
+
+<!-- 성공 메시지 -->
+<div th:if="${successMessage != null}">
+  <p th:text="${successMessage}" class="alert alert-success"></p>
+</div>
+
+<!-- 문의 양식 -->
+<form th:action="@{/submit_contact}" method="post">
+  <label for="name">이름:</label>
+  <input type="text" id="name" name="name" required><br>
+
+  <label for="email">이메일:</label>
+  <input type="email" id="email" name="email" required><br>
+
+  <label for="message">메시지:</label>
+  <textarea id="message" name="message" rows="5" required></textarea><br>
+
+  <button type="submit">보내기</button>
+</form>
+
+</body>
+</html>
