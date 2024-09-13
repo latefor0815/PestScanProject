@@ -14,29 +14,27 @@
     <!-- 공통 헤더 -->
     <header>
       <nav>
-        <ul>
-          <li><a href="/" th:href="@{/}">Home</a></li>
-          <li><a href="/images/upload" th:href="@{/images/upload}">Upload Image</a></li>
-          <li><a href="/about" th:href="@{/about}">About</a></li>
-          <li><a href="/contact" th:href="@{/contact}">Contact</a></li>
-          <li><a href="/insects" th:href="@{/insects}">Insects</a></li>
-          <li><a href="/reports/list" th:href="@{/reports/list}">Reports</a></li>
+        <!-- 좌측 최상단에 위치할 Home -->
+        <div class="nav-left">
+          <a href="/" th:href="@{/}">Home</a>
+        </div>
 
+        <!-- 중앙에 위치할 Upload Image, About, Contact, Insects, Reports -->
+        <div class="nav-center">
+          <a href="/images/upload" th:href="@{/images/upload}">Upload Image</a>
+          <a href="/about" th:href="@{/about}">About</a>
+          <a href="/contact" th:href="@{/contact}">Contact</a>
+          <a href="/insects" th:href="@{/insects}">Insects</a>
+          <a href="/reports/list" th:href="@{/reports/list}">Reports</a>
+        </div>
 
-
-
-          <!-- 로그인 여부에 따라 로그인/로그아웃 및 회원가입 버튼을 동적으로 표시 -->
-          <li th:if="${session.loggedInUser == null}">
-            <a href="/users/login" th:href="@{/users/login}">Login</a>
-          </li>
-          <li th:if="${session.loggedInUser == null}">
-            <a href="/users/signup" th:href="@{/users/signup}">Sign Up</a>
-          </li>
-          <li th:if="${session.loggedInUser != null}">
-            <span th:text="${session.loggedInUser.username}">Username</span>
-            <a href="/users/logout" th:href="@{/users/logout}">Logout</a>
-          </li>
-        </ul>
+        <!-- 우측 최상단에 위치할 Login, Sign Up -->
+        <div class="nav-right">
+          <a th:if="${session.loggedInUser == null}" href="/users/login" th:href="@{/users/login}">Login</a>
+          <a th:if="${session.loggedInUser == null}" href="/users/signup" th:href="@{/users/signup}">Sign Up</a>
+          <a th:if="${session.loggedInUser != null}" href="/users/logout" th:href="@{/users/logout}">Logout</a>
+          <span th:if="${session.loggedInUser != null}" th:text="${session.loggedInUser.username}">Username</span>
+        </div>
       </nav>
     </header>
 
