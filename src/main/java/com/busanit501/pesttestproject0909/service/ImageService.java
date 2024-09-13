@@ -3,6 +3,7 @@ package com.busanit501.pesttestproject0909.service;
 import com.busanit501.pesttestproject0909.dto.ImageDto;
 import com.busanit501.pesttestproject0909.entity.Image;
 import com.busanit501.pesttestproject0909.repository.ImageRepository;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,22 @@ public class ImageService {
     private ImageRepository imageRepository;
 
     private final String uploadDirectory = "C:/upload/";  // 파일을 저장할 경로
+
+    @PostConstruct
+    public void init() {
+        try {
+            Path uploadPath = Paths.get(uploadDirectory);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+                logger.info("Upload directory created: {}", uploadPath);
+            } else {
+                logger.info("Upload directory already exists: {}", uploadPath);
+            }
+        } catch (IOException e) {
+            logger.error("Could not create upload directory: {}", uploadDirectory, e);
+            throw new RuntimeException("Could not create upload directory", e);
+        }
+    }
 
     /**
      * 모든 이미지 목록 조회
@@ -71,6 +88,13 @@ public class ImageService {
         logger.info("Uploading image for user ID: {}", userId);
         String fileName = file.getOriginalFilename();  // 파일 이름 가져오기
         Path filePath = Paths.get(uploadDirectory + fileName);
+
+        // 디렉토리 존재 여부 재확인
+        Path uploadPath = Paths.get(uploadDirectory);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+            logger.info("Upload directory created: {}", uploadPath);
+        }
 
         // 파일 저장
         Files.write(filePath, file.getBytes());

@@ -88,12 +88,30 @@ public class ReportService {
         return reportRepository.findByIdAndUserId(reportId, userId)
                 .map(report -> {
                     // 관련된 엔티티들의 연관관계 처리
-                    report.getImage().getReports().remove(report);
-                    report.getInsect().getReports().remove(report);
-                    report.getUser().getReports().remove(report);
+                    Image image = report.getImage();
+                    Insect insect = report.getInsect();
+                    User user = report.getUser();
 
+                    if (image != null) {
+                        image.getReports().remove(report);
+                    }
+                    if (insect != null) {
+                        insect.getReports().remove(report);
+                    }
+                    if (user != null) {
+                        user.getReports().remove(report);
+                    }
+
+                    // 실제로 데이터베이스에서 리포트 삭제
                     reportRepository.delete(report);
                     logger.info("Deleted report with ID: {}", reportId);
+
+                    // 연관된 이미지도 삭제 (필요한 경우)
+                    if (image != null && image.getReports().isEmpty()) {
+                        imageRepository.delete(image);
+                        logger.info("Deleted associated image with ID: {}", image.getId());
+                    }
+
                     return true;
                 })
                 .orElseGet(() -> {
@@ -124,7 +142,13 @@ public class ReportService {
 
         // 기본 곤충 정보 사용 (나중에 AI 분석 결과로 대체)
         Insect defaultInsect = insectRepository.findById(1L)
-                .orElseThrow(() -> new RuntimeException("Default insect not found"));
+                .orElseGet(() -> {
+                    logger.warn("Default insect not found. Creating a new one.");
+                    Insect newInsect = new Insect();
+                    newInsect.setName("Unknown Insect");
+                    newInsect.setSpecies("Unknown Species");
+                    return insectRepository.save(newInsect);
+                });
 
         Report report = new Report();
         report.setUser(user);
