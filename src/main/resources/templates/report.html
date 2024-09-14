@@ -8,8 +8,8 @@
 <body>
 <h1>리포트 목록</h1>
 
-<div th:if="${message}" th:text="${message}" class="green-message"></div>
-<div th:if="${error}" th:text="${error}" class="red-message"></div>
+<div th:if="${message}" th:text="${message}" style="color: green;"></div>
+<div th:if="${error}" th:text="${error}" style="color: red;"></div>
 
 <table th:if="${reports != null and not #lists.isEmpty(reports)}">
   <thead>
@@ -29,7 +29,7 @@
     <td th:text="${report.analysisResult}"></td>
     <td>
       <form th:action="@{/reports/delete/{id}(id=${report.id})}" method="post" class="delete-form">
-        <input type="hidden" name="_method" value="DELETE"/>
+        <input type="hidden" name="_method" value="DELETE" />
         <button type="submit" class="delete-button" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
       </form>
     </td>
