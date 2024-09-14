@@ -1,17 +1,41 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-<head th:replace="layout/layout :: head(title='Home Page')"></head>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>해충 이미지분석 플랫폼</title>
+  <link rel="stylesheet" href="/css/styles.css"> <!-- 공통 스타일 -->
+  <link rel="stylesheet" href="/css/index.css">  <!-- 메인 페이지 전용 스타일 -->
+</head>
 <body>
-<div th:replace="layout/layout :: header"></div>
+<header>
+  <nav>
+    <div class="nav-left">
+      <a href="/">Home</a>
+      <a href="/images/upload">Upload Image</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href="/insects">Insects</a>
+      <a href="/reports/list">Reports</a>
+    </div>
+    <div class="nav-right">
+      <a href="/users/login">Login</a>
+      <a href="/users/signup">Sign Up</a>
+    </div>
+  </nav>
+</header>
 
-<main>
-  <h1>해충 이미지분석 페이지를 찾아주셔서 감사합니다.</h1>
-  <p>이 플랫폼을 사용하면 분석을 위해 해충 이미지를 업로드를 하여 어떤 해충인지 알 수 있습니다.</p>
-  <a href="/upload" th:href="@{/upload}">Upload a Pest Image</a>
+<main class="container default-page">
+  <div class="content-box">
+    <h1>해충 이미지분석 페이지를 찾아주셔서 감사합니다.</h1>
+    <p>이 플랫폼을 사용하면 분석을 위해 해충 이미지를 업로드를 하여 어떤 해충인지 알 수 있습니다.</p>
+    <a href="/images/upload" class="btn">Upload a Pest Image</a>
+  </div>
 </main>
 
-<div th:replace="layout/layout :: footer"></div>
+<footer>
+  <p>&copy; 2024 Pest Analysis Platform</p>
+  <p>Contact us at: info@pestanalysis.com</p>
+</footer>
 </body>
 </html>

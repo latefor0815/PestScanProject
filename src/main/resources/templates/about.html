@@ -3,11 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About Us</title>
-  <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}">
+  <title>About Pest Analysis Platform</title>
+  <link rel="stylesheet" href="/css/about.css"> <!-- 소개 페이지 전용 CSS -->
 </head>
 <body>
-<h1>About Pest Analysis Platform</h1>
-<p>저희 플랫폼은 최첨단 AI 기술을 활용하여 해충을 분석하고, 처음 농업을 시작하는 사용자가 해충 이름을 손쉽게 파악하고 관리할 수 있도록 돕습니다.</p>
+<header>
+  <nav>
+    <div class="nav-left">
+      <a href="/">Home</a>
+      <a href="/images/upload">Upload Image</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href="/insects">Insects</a>
+      <a href="/reports/list">Reports</a>
+    </div>
+    <div class="nav-right">
+      <a href="/users/login">Login</a>
+      <a hef="/users/signup">Sign Up</a>
+    </div>
+  </nav>
+</header>
+
+<main class="container about-page">
+  <div class="content-box">
+    <h1>About Pest Analysis Platform</h1>
+    <p>저희 플랫폼은 최신 AI 기술을 활용하여 해충을 분석하고, 농업에 도움을 줍니다.</p>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2024 Pest Analysis Platform</p>
+  <p>Contact us at: info@pestanalysis.com</p>
+</footer>
 </body>
 </html>

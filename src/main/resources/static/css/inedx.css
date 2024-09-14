@@ -1,0 +1,31 @@
+/* 메인 페이지 전용 스타일 */
+.default-page {
+    padding-top: 50px;
+}
+
+.default-page h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.default-page p {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.default-page .btn {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.default-page .btn:hover {
+    background-color: #0056b3;
+}

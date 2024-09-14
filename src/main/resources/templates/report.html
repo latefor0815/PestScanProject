@@ -3,27 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>리포트 목록</title>
-  <style>
-    /* 기존 스타일 유지 */
-    .delete-form {
-      display: inline;
-    }
-    .delete-button {
-      background: none;
-      border: none;
-      color: blue;
-      text-decoration: underline;
-      cursor: pointer;
-      padding: 0;
-      font: inherit;
-    }
-  </style>
+  <link rel="stylesheet" href="/css/report.css">
 </head>
 <body>
 <h1>리포트 목록</h1>
 
-<div th:if="${message}" th:text="${message}" style="color: green;"></div>
-<div th:if="${error}" th:text="${error}" style="color: red;"></div>
+<div th:if="${message}" th:text="${message}" class="green-message"></div>
+<div th:if="${error}" th:text="${error}" class="red-message"></div>
 
 <table th:if="${reports != null and not #lists.isEmpty(reports)}">
   <thead>

@@ -1,43 +1,102 @@
-/* Navigation */
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    line-height: 1.6;
+}
+
+/* Flexbox Layout for Body */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Body 최소 높이 100vh 적용 */
+}
+
+/* Container for centering content */
+.container {
+    width: 80%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* Header and Navigation */
+header {
+    background-color: #444;
+    padding: 10px 0;
+}
+
 nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #444;
-    padding: 10px;
-}
-
-.nav-left {
-    flex: 1;
-    text-align: left;
-}
-
-.nav-center {
-    flex: 2;
-    text-align: center;
-}
-
-.nav-right {
-    flex: 1;
-    text-align: right;
+    max-width: 960px;
+    margin: 0 auto;
 }
 
 nav a {
     color: white;
     margin: 0 15px;
     text-decoration: none;
+    font-size: 1rem;
 }
 
 nav a:hover {
     text-decoration: underline;
 }
 
-/* Global Styles */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
-    padding: 0;
+/* Main content */
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* content-box for default pages */
+.content-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    font-size: 1rem;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+    cursor: pointer;
 }
 
 /* Footer */
@@ -45,8 +104,64 @@ footer {
     background-color: #333;
     color: white;
     text-align: center;
-    padding: 1rem;
-    position: fixed;
-    bottom: 0;
+    padding: 20px 0;
     width: 100%;
+    font-size: 0.9rem;
+    margin-top: auto;
+}
+
+footer p {
+    margin: 0;
+}
+
+footer a {
+    color: #bbb;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: white;
+}
+
+/* Specific Page Styles */
+.default-page {
+    justify-content: center;
+    text-align: center;
+}
+
+.upload-page .container {
+    text-align: center;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 10px;
+    }
+
+    nav a {
+        margin: 5px;
+    }
+
+    h1, h2, h3 {
+        font-size: 1.5rem;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    .content-box h1 {
+        font-size: 1.75rem;
+    }
+
+    .content-box p {
+        font-size: 1rem;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
 }

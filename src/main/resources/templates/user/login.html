@@ -1,29 +1,25 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/layout :: head(title='Login Page')"></head>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 페이지</title>
+  <link rel="stylesheet" href="/css/login.css">
+</head>
 <body>
-<div th:replace="layout/layout :: header"></div>
-
-<main>
-  <div class="card-header">
+<main class="login-page">
+  <div class="login-box">
     <h2>LOGIN Page</h2>
-  </div>
-  <div class="card-body">
     <form th:action="@{/users/login}" method="post">
-      <div class="input-group mb-3">
+      <div class="input-group">
         <input type="email" class="form-control" name="email" id="email" placeholder="이메일을 입력해주세요" required />
       </div>
-      <div class="input-group mb-3">
+      <div class="input-group">
         <input type="password" class="form-control" name="password" id="password" placeholder="비밀번호를 입력해주세요" required />
       </div>
-      <button class="btn btn-primary w-100 submitBtn" type="submit">Login</button>
+      <button class="submitBtn" type="submit">Login</button>
     </form>
   </div>
 </main>
-
-<div th:replace="layout/layout :: footer"></div>
-
 </body>
 </html>
