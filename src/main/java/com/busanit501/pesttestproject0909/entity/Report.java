@@ -19,9 +19,8 @@ public class Report {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "image_id", nullable = false)
-    private Image image;
+    @Column(name = "image_id")
+    private String imageId;
 
     @ManyToOne
     @JoinColumn(name = "insect_id", nullable = false)

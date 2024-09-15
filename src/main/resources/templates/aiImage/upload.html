@@ -1,26 +1,37 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html
+        lang="ko"
+        xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>이미지 업로드</title>
-  <link rel="stylesheet" href="/css/upload.css">
+  <title>Upload Image</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-<main class="container">
-  <h1>Upload Image</h1>
-  <form th:action="@{/images/upload}" method="post" enctype="multipart/form-data">
+<div class="container" role="main">
+  <h1 class="mt-5">Upload Image</h1>
+
+  <form action="/images/upload" method="post" enctype="multipart/form-data">
     <div class="form-group">
       <label for="file">Select Image:</label>
-      <input type="file" id="file" name="file" required>
+      <input type="file" class="form-control-file" id="file" name="file" required>
     </div>
+
     <div class="form-group">
       <label for="userId">User ID:</label>
-      <input type="text" id="userId" name="userId" required>
+      <input type="text" class="form-control" id="userId" name="userId" th:value="${session.loggedInUser != null ? session.loggedInUser.id : ''}" readonly>
     </div>
-    <button type="submit" class="btn">Upload</button>
+
+    <button type="submit" class="btn btn-primary">Upload</button>
   </form>
-  <a href="/" class="btn">홈으로</a>
-</main>
+
+  <a href="/" class="btn btn-secondary mt-3">홈으로</a>
+
+  <div th:if="${message}" class="alert alert-success mt-3" th:text="${message}"></div>
+  <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

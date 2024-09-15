@@ -41,7 +41,7 @@ public class ReportService {
         logger.info("Found {} reports in the database", reports.size());
 
         List<ReportDto> reportDtos = reports.stream()
-                .map(this::convertToDto)
+                .map(this::toReportDto)
                 .collect(Collectors.toList());
 
         logger.info("Converted {} reports to DTOs", reportDtos.size());
@@ -54,7 +54,7 @@ public class ReportService {
                 .orElse(null);
         if (report != null) {
             logger.info("Found report: {}", report);
-            return convertToDto(report);
+            return toReportDto(report);
         } else {
             logger.warn("Report not found for ID: {} and user ID: {}", reportId, userId);
             return null;
@@ -62,24 +62,25 @@ public class ReportService {
     }
 
     @Transactional
-    public ReportDto saveReport(Long userId, Long imageId, Long insectId, String analysisResult) {
+    public ReportDto saveReport(Long userId, String imageId, Long insectId, String analysisResult) {
         logger.info("Saving report for user ID: {}, image ID: {}, insect ID: {}", userId, imageId, insectId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new RuntimeException("Image not found"));
+        if (!imageRepository.existsById(imageId)) {
+            throw new RuntimeException("Image not found");
+        }
         Insect insect = insectRepository.findById(insectId)
                 .orElseThrow(() -> new RuntimeException("Insect not found"));
 
         Report report = new Report();
         report.setUser(user);
-        report.setImage(image);
+        report.setImageId(imageId);
         report.setInsect(insect);
         report.setAnalysisResult(analysisResult);
         Report savedReport = reportRepository.save(report);
 
         logger.info("Saved report: {}", savedReport);
-        return convertToDto(savedReport);
+        return toReportDto(savedReport);
     }
 
     @Transactional
@@ -87,31 +88,8 @@ public class ReportService {
         logger.info("Attempting to delete report with ID: {} for user ID: {}", reportId, userId);
         return reportRepository.findByIdAndUserId(reportId, userId)
                 .map(report -> {
-                    // 관련된 엔티티들의 연관관계 처리
-                    Image image = report.getImage();
-                    Insect insect = report.getInsect();
-                    User user = report.getUser();
-
-                    if (image != null) {
-                        image.getReports().remove(report);
-                    }
-                    if (insect != null) {
-                        insect.getReports().remove(report);
-                    }
-                    if (user != null) {
-                        user.getReports().remove(report);
-                    }
-
-                    // 실제로 데이터베이스에서 리포트 삭제
                     reportRepository.delete(report);
                     logger.info("Deleted report with ID: {}", reportId);
-
-                    // 연관된 이미지도 삭제 (필요한 경우)
-                    if (image != null && image.getReports().isEmpty()) {
-                        imageRepository.delete(image);
-                        logger.info("Deleted associated image with ID: {}", image.getId());
-                    }
-
                     return true;
                 })
                 .orElseGet(() -> {
@@ -120,27 +98,15 @@ public class ReportService {
                 });
     }
 
-    private ReportDto convertToDto(Report report) {
-        ReportDto dto = new ReportDto(
-                report.getId(),
-                report.getUser().getId(),
-                report.getImage().getFileName(),
-                report.getInsect().getName(),
-                report.getAnalysisResult()
-        );
-        logger.debug("Converted report to DTO: {}", dto);
-        return dto;
-    }
-
     @Transactional
-    public ReportDto createReportForImage(Long userId, Long imageId) {
+    public ReportDto createReportForImage(Long userId, String imageId) {
         logger.info("Creating report for image. User ID: {}, Image ID: {}", userId, imageId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new RuntimeException("Image not found"));
+        if (!imageRepository.existsById(imageId)) {
+            throw new RuntimeException("Image not found");
+        }
 
-        // 기본 곤충 정보 사용 (나중에 AI 분석 결과로 대체)
         Insect defaultInsect = insectRepository.findById(1L)
                 .orElseGet(() -> {
                     logger.warn("Default insect not found. Creating a new one.");
@@ -152,13 +118,26 @@ public class ReportService {
 
         Report report = new Report();
         report.setUser(user);
-        report.setImage(image);
+        report.setImageId(imageId);
         report.setInsect(defaultInsect);
         report.setAnalysisResult("기본 분석 결과");
 
         Report savedReport = reportRepository.save(report);
         logger.info("Saved new report: {}", savedReport);
 
-        return convertToDto(savedReport);
+        return toReportDto(savedReport);
+    }
+
+    private ReportDto toReportDto(Report report) {
+        Image image = imageRepository.findById(report.getImageId())
+                .orElseThrow(() -> new RuntimeException("Image not found with ID: " + report.getImageId()));
+
+        return new ReportDto(
+                report.getId(),
+                report.getUser().getId(),
+                image.getFileName(),
+                report.getInsect().getName(),
+                report.getAnalysisResult()
+        );
     }
 }

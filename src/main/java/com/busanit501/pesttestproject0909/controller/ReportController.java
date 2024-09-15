@@ -77,7 +77,7 @@ public class ReportController {
     }
 
     @PostMapping("/create")
-    public String createReport(@RequestParam Long imageId,
+    public String createReport(@RequestParam String imageId,
                                @RequestParam Long insectId,
                                @RequestParam String analysisResult,
                                HttpSession session,

@@ -29,47 +29,32 @@ public class ImageController {
     @Autowired
     private ReportService reportService;
 
-    /**
-     * 모든 이미지 목록 조회
-     */
     @GetMapping
     public String getAllImages(Model model) {
         List<ImageDto> images = imageService.getAllImages();
         model.addAttribute("images", images);
-        return "imageList"; // templates 폴더 내의 imageList.html 파일로 이동
+        return "imageList";
     }
 
-    /**
-     * 사용자 ID로 이미지 목록 조회
-     */
     @GetMapping("/user/{userId}")
-    public String getImagesByUserId(@PathVariable Long userId, Model model) {
+    public String getImagesByUserId(@PathVariable String userId, Model model) {
         List<ImageDto> images = imageService.getImagesByUserId(userId);
         model.addAttribute("images", images);
-        return "imageListByUser"; // 사용자별 이미지 목록 페이지로 이동
+        return "imageListByUser";
     }
 
-    /**
-     * 이미지 ID로 이미지 조회
-     */
     @GetMapping("/{id}")
-    public String getImageById(@PathVariable Long id, Model model) {
+    public String getImageById(@PathVariable String id, Model model) {
         ImageDto image = imageService.getImageById(id);
         model.addAttribute("image", image);
-        return "imageDetail"; // templates 폴더 내의 imageDetail.html 파일로 이동
+        return "imageDetail";
     }
 
-    /**
-     * 이미지 업로드 폼 보여주기
-     */
     @GetMapping("/upload")
     public String showUploadForm() {
-        return "aiImage/upload"; // templates/aiImage/upload.html 파일로 이동
+        return "aiImage/upload";
     }
 
-    /**
-     * 이미지 업로드 처리
-     */
     @PostMapping("/upload")
     public String uploadImage(@RequestParam("file") MultipartFile file,
                               Model model,
@@ -81,10 +66,9 @@ public class ImageController {
                 return "redirect:/users/login";
             }
 
-            ImageDto uploadedImage = imageService.uploadImage(file, loggedInUser.getId());
+            ImageDto uploadedImage = imageService.uploadImage(file, loggedInUser.getId().toString());
             model.addAttribute("uploadedImage", uploadedImage);
 
-            // 리포트 생성 로직
             ReportDto createdReport = reportService.createReportForImage(loggedInUser.getId(), uploadedImage.getId());
             logger.info("Created report: {}", createdReport);
 
@@ -100,18 +84,15 @@ public class ImageController {
         return "redirect:/images/upload";
     }
 
-    /**
-     * 이미지 삭제
-     */
     @PostMapping("/delete/{id}")
-    public String deleteImage(@PathVariable Long id, HttpSession session, Model model) {
+    public String deleteImage(@PathVariable String id, HttpSession session, Model model) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) {
             return "redirect:/users/login";
         }
 
         try {
-            boolean deleted = imageService.deleteImage(id, loggedInUser.getId());
+            boolean deleted = imageService.deleteImage(id, loggedInUser.getId().toString());
             if (deleted) {
                 model.addAttribute("message", "Image deleted successfully");
             } else {

@@ -27,27 +27,6 @@ public class ImageService {
     @Autowired
     private ImageRepository imageRepository;
 
-    private final String uploadDirectory = "C:/upload/";  // 파일을 저장할 경로
-
-    @PostConstruct
-    public void init() {
-        try {
-            Path uploadPath = Paths.get(uploadDirectory);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-                logger.info("Upload directory created: {}", uploadPath);
-            } else {
-                logger.info("Upload directory already exists: {}", uploadPath);
-            }
-        } catch (IOException e) {
-            logger.error("Could not create upload directory: {}", uploadDirectory, e);
-            throw new RuntimeException("Could not create upload directory", e);
-        }
-    }
-
-    /**
-     * 모든 이미지 목록 조회
-     */
     public List<ImageDto> getAllImages() {
         logger.info("Fetching all images");
         List<Image> images = imageRepository.findAll();
@@ -56,10 +35,7 @@ public class ImageService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 이미지 ID로 이미지 조회
-     */
-    public ImageDto getImageById(Long id) {
+    public ImageDto getImageById(String id) {
         logger.info("Fetching image with ID: {}", id);
         Optional<Image> image = imageRepository.findById(id);
         if (image.isPresent()) {
@@ -70,10 +46,7 @@ public class ImageService {
         }
     }
 
-    /**
-     * 사용자 ID로 이미지 목록 조회
-     */
-    public List<ImageDto> getImagesByUserId(Long userId) {
+    public List<ImageDto> getImagesByUserId(String userId) {
         logger.info("Fetching images for user ID: {}", userId);
         List<Image> images = imageRepository.findByUserId(userId);
         return images.stream()
@@ -81,65 +54,33 @@ public class ImageService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 이미지 업로드 처리
-     */
-    public ImageDto uploadImage(MultipartFile file, Long userId) throws IOException {
+    public ImageDto uploadImage(MultipartFile file, String userId) throws IOException {
         logger.info("Uploading image for user ID: {}", userId);
-        String fileName = file.getOriginalFilename();  // 파일 이름 가져오기
-        Path filePath = Paths.get(uploadDirectory + fileName);
-
-        // 디렉토리 존재 여부 재확인
-        Path uploadPath = Paths.get(uploadDirectory);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-            logger.info("Upload directory created: {}", uploadPath);
-        }
-
-        // 파일 저장
-        Files.write(filePath, file.getBytes());
-        logger.info("File saved: {}", filePath);
-
-        // DB에 파일 이름 및 사용자 정보 저장
         Image image = new Image();
-        image.setFileName(fileName);  // 파일 이름 저장
+        image.setFileName(file.getOriginalFilename());
         image.setUserId(userId);
+        image.setData(file.getBytes());
         Image savedImage = imageRepository.save(image);
-        logger.info("Image info saved to database: {}", savedImage);
-
+        logger.info("Image saved to database: {}", savedImage.getId());
         return convertToDto(savedImage);
     }
 
-    /**
-     * 이미지 삭제
-     */
-    public boolean deleteImage(Long id, Long userId) {
+    public boolean deleteImage(String id, String userId) {
         logger.info("Attempting to delete image with ID: {} for user ID: {}", id, userId);
         Optional<Image> imageOpt = imageRepository.findById(id);
         if (imageOpt.isPresent() && imageOpt.get().getUserId().equals(userId)) {
-            Image image = imageOpt.get();
-            // 파일 시스템에서 이미지 파일 삭제
-            Path filePath = Paths.get(uploadDirectory + image.getFileName());
-            try {
-                Files.deleteIfExists(filePath);
-                logger.info("Image file deleted: {}", filePath);
-            } catch (IOException e) {
-                logger.error("Failed to delete image file: {}", filePath, e);
-            }
-            // 데이터베이스에서 이미지 정보 삭제
-            imageRepository.delete(image);
-            logger.info("Image deleted from database: {}", image);
+            imageRepository.delete(imageOpt.get());
+            logger.info("Image deleted from database: {}", id);
             return true;
         }
         logger.warn("Image not found or user does not have permission. ID: {}, User ID: {}", id, userId);
         return false;
     }
 
-    // Entity -> DTO 변환
     private ImageDto convertToDto(Image image) {
         return new ImageDto(
                 image.getId(),
-                image.getFileName(),  // fileName을 반환
+                image.getFileName(),
                 image.getUserId()
         );
     }

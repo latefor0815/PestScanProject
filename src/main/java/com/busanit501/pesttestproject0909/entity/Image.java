@@ -4,39 +4,32 @@ import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Entity
+@Document(collection = "images")
 public class Image {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // 기본 키 생성 전략 설정
-    private Long id;
+    private String id;
+    private String fileName;
+    private String userId;
+    private byte[] data;
 
-    private String fileName;  // 파일 이름을 저장할 필드
-    private Long userId;  // 사용자 ID
-
-    // Report와 일대다 관계 설정
-    @OneToMany(mappedBy = "image", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Report> reports;
-
-    // 기본 생성자
     public Image() {}
 
-    // 생성자
-    public Image(Long id, String fileName, Long userId) {
+    public Image(String id, String fileName, String userId, byte[] data) {
         this.id = id;
         this.fileName = fileName;
         this.userId = userId;
+        this.data = data;
     }
 
-    // Getter 및 Setter 메서드
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -48,20 +41,19 @@ public class Image {
         this.fileName = fileName;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    // reports 필드의 Getter 및 Setter
-    public List<Report> getReports() {
-        return reports;
+    public byte[] getData() {
+        return data;
     }
 
-    public void setReports(List<Report> reports) {
-        this.reports = reports;
+    public void setData(byte[] data) {
+        this.data = data;
     }
 }
