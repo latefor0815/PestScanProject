@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html
-        lang="ko"
-        xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
+  <meta charset="UTF-8">
   <title>Upload Image</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
@@ -10,7 +9,7 @@
 <div class="container" role="main">
   <h1 class="mt-5">Upload Image</h1>
 
-  <form action="/images/upload" method="post" enctype="multipart/form-data">
+  <form id="uploadForm" enctype="multipart/form-data">
     <div class="form-group">
       <label for="file">Select Image:</label>
       <input type="file" class="form-control-file" id="file" name="file" required>
@@ -26,12 +25,37 @@
 
   <a href="/" class="btn btn-secondary mt-3">홈으로</a>
 
-  <div th:if="${message}" class="alert alert-success mt-3" th:text="${message}"></div>
-  <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+  <div id="message" class="alert mt-3" style="display: none;"></div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#uploadForm').submit(function(e) {
+      e.preventDefault();
+      var formData = new FormData(this);
+
+      $.ajax({
+        url: '/images/upload',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          if (response.redirect) {
+            window.location.href = response.redirect;
+          } else {
+            $('#message').text('Upload successful!').removeClass('alert-danger').addClass('alert-success').show();
+          }
+        },
+        error: function(xhr, status, error) {
+          $('#message').text('Error: ' + xhr.responseText).removeClass('alert-success').addClass('alert-danger').show();
+        }
+      });
+    });
+  });
+</script>
 </body>
 </html>

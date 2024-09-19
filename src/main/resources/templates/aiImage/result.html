@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html  lang="ko"
+       xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Image Upload Result</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h2>Image Upload and Classification Result</h2>
+
+  <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+  <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+  <div th:if="${uploadedImage}">
+    <h3>Uploaded Image</h3>
+    <p>File Name: <span th:text="${uploadedImage.fileName}"></span></p>
+    <p>Image ID: <span th:text="${uploadedImage.id}"></span></p>
+  </div>
+
+  <div th:if="${createdReport}">
+    <h3>Created Report</h3>
+    <p>Report ID: <span th:text="${createdReport.id}"></span></p>
+    <p>Analysis Result: <span th:text="${createdReport.analysisResult}"></span></p>
+  </div>
+
+  <div th:if="${djangoResult}">
+    <h3>Django Classification Result</h3>
+    <pre th:text="${djangoResult}"></pre>
+  </div>
+
+  <a href="/images/upload" class="btn btn-primary mt-3">Upload Another Image</a>
+  <a href="/" class="btn btn-secondary mt-3">Home</a>
+</div>
+</body>
+</html>

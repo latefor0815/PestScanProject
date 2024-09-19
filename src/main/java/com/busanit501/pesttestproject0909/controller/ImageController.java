@@ -6,22 +6,22 @@ import com.busanit501.pesttestproject0909.entity.User;
 import com.busanit501.pesttestproject0909.service.ImageService;
 import com.busanit501.pesttestproject0909.service.ReportService;
 import jakarta.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping("/images")
+@Log4j2
 public class ImageController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ImageController.class);
 
     @Autowired
     private ImageService imageService;
@@ -29,80 +29,66 @@ public class ImageController {
     @Autowired
     private ReportService reportService;
 
+    @GetMapping("/upload")
+    public ModelAndView showUploadForm() {
+        return new ModelAndView("aiImage/upload");
+    }
+
     @GetMapping
-    public String getAllImages(Model model) {
+    public ResponseEntity<List<ImageDto>> getAllImages() {
         List<ImageDto> images = imageService.getAllImages();
-        model.addAttribute("images", images);
-        return "imageList";
+        return ResponseEntity.ok(images);
     }
 
     @GetMapping("/user/{userId}")
-    public String getImagesByUserId(@PathVariable String userId, Model model) {
-        List<ImageDto> images = imageService.getImagesByUserId(userId);
-        model.addAttribute("images", images);
-        return "imageListByUser";
+    public ResponseEntity<List<ImageDto>> getImagesByUserId(@PathVariable Long userId) {
+        List<ImageDto> images = imageService.getImagesByUserId(userId.toString());
+        return ResponseEntity.ok(images);
     }
 
     @GetMapping("/{id}")
-    public String getImageById(@PathVariable String id, Model model) {
-        ImageDto image = imageService.getImageById(id);
-        model.addAttribute("image", image);
-        return "imageDetail";
-    }
-
-    @GetMapping("/upload")
-    public String showUploadForm() {
-        return "aiImage/upload";
+    public ResponseEntity<ImageDto> getImageById(@PathVariable String id) {
+        try {
+            ImageDto image = imageService.getImageById(id);
+            return ResponseEntity.ok(image);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/upload")
-    public String uploadImage(@RequestParam("file") MultipartFile file,
-                              Model model,
-                              HttpSession session) {
-        try {
-            User loggedInUser = (User) session.getAttribute("loggedInUser");
-            if (loggedInUser == null) {
-                logger.warn("User not logged in while attempting to upload image");
-                return "redirect:/users/login";
-            }
-
-            ImageDto uploadedImage = imageService.uploadImage(file, loggedInUser.getId().toString());
-            model.addAttribute("uploadedImage", uploadedImage);
-
-            ReportDto createdReport = reportService.createReportForImage(loggedInUser.getId(), uploadedImage.getId());
-            logger.info("Created report: {}", createdReport);
-
-            model.addAttribute("message", "Image uploaded successfully and report created!");
-        } catch (IOException e) {
-            logger.error("Failed to upload image", e);
-            model.addAttribute("error", "Failed to upload image: " + e.getMessage());
-        } catch (Exception e) {
-            logger.error("An unexpected error occurred during image upload", e);
-            model.addAttribute("error", "An unexpected error occurred: " + e.getMessage());
-        }
-
-        return "redirect:/images/upload";
-    }
-
-    @PostMapping("/delete/{id}")
-    public String deleteImage(@PathVariable String id, HttpSession session, Model model) {
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file,
+                                         HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) {
-            return "redirect:/users/login";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
         }
 
         try {
-            boolean deleted = imageService.deleteImage(id, loggedInUser.getId().toString());
-            if (deleted) {
-                model.addAttribute("message", "Image deleted successfully");
-            } else {
-                model.addAttribute("error", "Failed to delete image. It may not exist or you may not have permission.");
-            }
+            ImageDto uploadedImage = imageService.uploadAndClassifyImage(file, loggedInUser.getId().toString());
+            ReportDto createdReport = reportService.createReportForImage(loggedInUser.getId(), uploadedImage.getId());
+
+            String redirectUrl = "/result?imageId=" + uploadedImage.getId() + "&reportId=" + createdReport.getId();
+            return ResponseEntity.ok().body(Map.of("redirect", redirectUrl));
         } catch (Exception e) {
-            logger.error("Error occurred while deleting image", e);
-            model.addAttribute("error", "An error occurred while deleting the image: " + e.getMessage());
+            log.error("An error occurred during image upload and processing", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteImage(@PathVariable String id, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
         }
 
-        return "redirect:/images";
+        boolean deleted = imageService.deleteImage(id, loggedInUser.getId().toString());
+        if (deleted) {
+            return ResponseEntity.ok("Image deleted successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Failed to delete image. It may not exist or you may not have permission.");
+        }
     }
 }
