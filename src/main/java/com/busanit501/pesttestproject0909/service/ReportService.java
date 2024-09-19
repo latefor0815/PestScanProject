@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 public class ReportService {
 
@@ -46,6 +45,14 @@ public class ReportService {
 
         logger.info("Converted {} reports to DTOs", reportDtos.size());
         return reportDtos;
+    }
+
+    public ReportDto getReportById(Long reportId) {
+        logger.info("Fetching report with ID: {}", reportId);
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new RuntimeException("Report not found with ID: " + reportId));
+        logger.info("Found report: {}", report);
+        return toReportDto(report);
     }
 
     public ReportDto getReportByIdAndUserId(Long reportId, Long userId) {

@@ -1,36 +1,28 @@
 <!DOCTYPE html>
-<html  lang="ko"
-       xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Image Upload Result</title>
+  <meta charset="UTF-8">
+  <title>이미지 분석 결과</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container mt-5">
-  <h2>Image Upload and Classification Result</h2>
+  <h1>이미지 분석 결과</h1>
 
-  <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
-  <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
-  <div th:if="${uploadedImage}">
-    <h3>Uploaded Image</h3>
-    <p>File Name: <span th:text="${uploadedImage.fileName}"></span></p>
-    <p>Image ID: <span th:text="${uploadedImage.id}"></span></p>
+  <div class="card mt-4">
+    <div class="card-body">
+      <h5 class="card-title">분석 결과</h5>
+      <p class="card-text">결과: <strong th:text="${koreanLabel}">해충 이름</strong></p>
+      <p class="card-text">정확도: <strong th:text="${confidence + '%'}">정확도</strong></p>
+    </div>
   </div>
 
-  <div th:if="${createdReport}">
-    <h3>Created Report</h3>
-    <p>Report ID: <span th:text="${createdReport.id}"></span></p>
-    <p>Analysis Result: <span th:text="${createdReport.analysisResult}"></span></p>
-  </div>
-
-  <div th:if="${djangoResult}">
-    <h3>Django Classification Result</h3>
-    <pre th:text="${djangoResult}"></pre>
-  </div>
-
-  <a href="/images/upload" class="btn btn-primary mt-3">Upload Another Image</a>
-  <a href="/" class="btn btn-secondary mt-3">Home</a>
+  <a href="/images/upload" class="btn btn-primary mt-3">다른 이미지 업로드</a>
+  <a href="/" class="btn btn-secondary mt-3">홈으로</a>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
