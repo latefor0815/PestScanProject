@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>리포트 목록</title>
-  <link rel="stylesheet" href="/css/report.css">
+  <link rel="stylesheet" th:href="@{/css/report.css}">
 </head>
 <body>
 <h1>리포트 목록</h1>
 
-<div th:if="${message}" th:text="${message}" style="color: green;"></div>
-<div th:if="${error}" th:text="${error}" style="color: red;"></div>
+<div th:if="${message}" class="green-message" th:text="${message}"></div>
+<div th:if="${error}" class="red-message" th:text="${error}"></div>
 
 <table th:if="${reports != null and not #lists.isEmpty(reports)}">
   <thead>
@@ -28,20 +28,28 @@
     <td th:text="${report.insectName}"></td>
     <td th:text="${report.analysisResult}"></td>
     <td>
-      <form th:action="@{/reports/delete/{id}(id=${report.id})}" method="post" class="delete-form">
-        <input type="hidden" name="_method" value="DELETE" />
-        <button type="submit" class="delete-button" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+      <form th:action="@{/reports/delete/{id}(id=${report.id})}" method="post">
+        <button type="submit" class="delete-button">삭제</button>
       </form>
     </td>
   </tr>
   </tbody>
 </table>
 
-<div th:if="${reports == null or #lists.isEmpty(reports)}">
-  <p>현재 등록된 리포트가 없습니다.</p>
+<p th:if="${reports == null or #lists.isEmpty(reports)}">
+  현재 등록된 리포트가 없습니다.
+</p>
+
+<!-- Pagination -->
+<div class="pagination" th:if="${totalPages > 1}">
+  <a th:if="${currentPage > 0}" th:href="@{/reports/list(page=${currentPage - 1})}">&laquo; 이전</a>
+  <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:if="${i != currentPage}" th:href="@{/reports/list(page=${i})}" th:text="${i + 1}"></a>
+            <span th:if="${i == currentPage}" th:text="${i + 1}" class="current-page"></span>
+        </span>
+  <a th:if="${currentPage < totalPages - 1}" th:href="@{/reports/list(page=${currentPage + 1})}">다음 &raquo;</a>
 </div>
 
-<a href="/">홈으로</a>
-
+<a href="/" class="home-link">홈으로</a>
 </body>
 </html>
