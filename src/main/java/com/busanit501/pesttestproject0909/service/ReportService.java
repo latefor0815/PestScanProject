@@ -79,23 +79,19 @@ public class ReportService {
     }
 
     @Transactional
-    public ReportDto saveReport(Long userId, String imageId, Long insectId, String analysisResult) {
-        logger.info("Saving report for user ID: {}, image ID: {}, insect ID: {}", userId, imageId, insectId);
+    public ReportDto saveReport(Long userId, String imageId, String predictedClassLabel, Double confidence) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        if (!imageRepository.existsById(imageId)) {
-            throw new RuntimeException("Image not found");
-        }
-        Insect insect = insectRepository.findById(insectId)
-                .orElseThrow(() -> new RuntimeException("Insect not found"));
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new RuntimeException("Image not found"));
 
         Report report = new Report();
         report.setUser(user);
         report.setImageId(imageId);
-        report.setInsect(insect);
-        report.setAnalysisResult(analysisResult);
-        Report savedReport = reportRepository.save(report);
+        report.setPredictedClassLabel(predictedClassLabel);
+        report.setConfidence(confidence);
 
+        Report savedReport = reportRepository.save(report);
         logger.info("Saved report: {}", savedReport);
         return toReportDto(savedReport);
     }
@@ -116,28 +112,28 @@ public class ReportService {
     }
 
     @Transactional
-    public ReportDto createReportForImage(Long userId, String imageId) {
-        logger.info("Creating report for image. User ID: {}, Image ID: {}", userId, imageId);
+    public ReportDto createReportForImage(Long userId, String imageId, String predictedClassLabel, Double confidence) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        if (!imageRepository.existsById(imageId)) {
-            throw new RuntimeException("Image not found");
-        }
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new RuntimeException("Image not found"));
 
-        Insect defaultInsect = insectRepository.findById(1L)
+        Insect insect = insectRepository.findByName(predictedClassLabel)
                 .orElseGet(() -> {
-                    logger.warn("Default insect not found. Creating a new one.");
                     Insect newInsect = new Insect();
-                    newInsect.setName("Unknown Insect");
-                    newInsect.setSpecies("Unknown Species");
+                    newInsect.setName(predictedClassLabel);
                     return insectRepository.save(newInsect);
                 });
 
         Report report = new Report();
         report.setUser(user);
         report.setImageId(imageId);
-        report.setInsect(defaultInsect);
-        report.setAnalysisResult("기본 분석 결과");
+        report.setInsect(insect);
+        report.setPredictedClassLabel(predictedClassLabel);
+        report.setConfidence(confidence);
+
+        String analysisResult = String.format("%s (정확도: %.2f%%)", predictedClassLabel, confidence * 100);
+        report.setAnalysisResult(analysisResult);
 
         Report savedReport = reportRepository.save(report);
         logger.info("Saved new report: {}", savedReport);
@@ -146,14 +142,16 @@ public class ReportService {
     }
 
     private ReportDto toReportDto(Report report) {
-        Image image = imageRepository.findById(report.getImageId())
-                .orElseThrow(() -> new RuntimeException("Image not found with ID: " + report.getImageId()));
+        User user = report.getUser();
+        Image image = imageRepository.findById(report.getImageId()).orElse(null);
+        Insect insect = report.getInsect();
 
         return new ReportDto(
                 report.getId(),
-                report.getUser().getId(),
-                image.getFileName(),
-                report.getInsect().getName(),
+                user != null ? user.getId() : null,
+                report.getImageId(),
+                image != null ? image.getFileName() : null,
+                insect != null ? insect.getName() : null,
                 report.getAnalysisResult(),
                 report.getPredictedClassLabel(),
                 report.getConfidence()

@@ -8,15 +8,17 @@ import lombok.NoArgsConstructor;
 public class ReportDto {
     private Long id;
     private Long userId;
+    private String imageId;
     private String imageName;
     private String insectName;
     private String analysisResult;
     private String predictedClassLabel;
     private Double confidence;
 
-    public ReportDto(Long id, Long userId, String imageName, String insectName, String analysisResult, String predictedClassLabel, Double confidence) {
+    public ReportDto(Long id, Long userId, String imageId, String imageName, String insectName, String analysisResult, String predictedClassLabel, Double confidence) {
         this.id = id;
         this.userId = userId;
+        this.imageId = imageId;
         this.imageName = imageName;
         this.insectName = insectName;
         this.analysisResult = analysisResult;

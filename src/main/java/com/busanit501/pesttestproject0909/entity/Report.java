@@ -23,7 +23,7 @@ public class Report {
     private String imageId;
 
     @ManyToOne
-    @JoinColumn(name = "insect_id", nullable = false)
+    @JoinColumn(name = "insect_id")  // nullable = true로 변경
     private Insect insect;
 
     @Column

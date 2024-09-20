@@ -82,8 +82,8 @@ public class ReportController {
 
     @PostMapping("/create")
     public String createReport(@RequestParam String imageId,
-                               @RequestParam Long insectId,
-                               @RequestParam String analysisResult,
+                               @RequestParam String predictedClassLabel,
+                               @RequestParam Double confidence,
                                HttpSession session,
                                Model model) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
@@ -92,7 +92,7 @@ public class ReportController {
         }
 
         try {
-            ReportDto createdReport = reportService.saveReport(loggedInUser.getId(), imageId, insectId, analysisResult);
+            ReportDto createdReport = reportService.createReportForImage(loggedInUser.getId(), imageId, predictedClassLabel, confidence);
             logger.info("새 리포트 생성: {}", createdReport);
             return "redirect:/reports/list";
         } catch (Exception e) {

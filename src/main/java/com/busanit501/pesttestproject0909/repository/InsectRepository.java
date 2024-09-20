@@ -8,4 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface InsectRepository extends JpaRepository<Insect, Long> {
+    Optional<Insect> findByName(String name);
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +65,13 @@ public class ImageController {
 
         try {
             ImageDto uploadedImage = imageService.uploadAndClassifyImage(file, loggedInUser.getId().toString());
-            ReportDto createdReport = reportService.createReportForImage(loggedInUser.getId(), uploadedImage.getId());
+            // 수정된 부분: ReportService.createReportForImage 메소드 호출 시 인자 추가
+            ReportDto createdReport = reportService.createReportForImage(
+                    loggedInUser.getId(),
+                    uploadedImage.getId(),
+                    uploadedImage.getPredictedClassLabel(),
+                    uploadedImage.getConfidence()
+            );
 
             String redirectUrl = "/result?imageId=" + uploadedImage.getId() + "&reportId=" + createdReport.getId();
             return ResponseEntity.ok().body(Map.of("redirect", redirectUrl));
