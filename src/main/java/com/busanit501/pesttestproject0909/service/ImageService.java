@@ -58,52 +58,43 @@ public class ImageService {
     public ImageDto uploadAndClassifyImage(MultipartFile file, String userId) throws IOException {
         log.info("Uploading and classifying image for user ID: {}", userId);
 
-        // 이미지 저장
         Image image = new Image();
         image.setFileName(file.getOriginalFilename());
         image.setUserId(userId);
         image.setData(file.getBytes());
-        Image savedImage = imageRepository.save(image);
 
-        // Django API 호출
         PredictionResponseDTO predictionResponse = sendImageToDjangoServer(file.getBytes(), file.getOriginalFilename());
 
-        // 분류 결과를 ImageDto에 포함
-        ImageDto imageDto = convertToDto(savedImage);
-        imageDto.setPredictedClassLabel(predictionResponse.getPredictedClassLabel());
-        imageDto.setConfidence(predictionResponse.getConfidence());
+        image.setPredictedClassLabel(predictionResponse.getPredictedClassLabel());
+        image.setConfidence(predictionResponse.getConfidence());
 
+        Image savedImage = imageRepository.save(image);
         log.info("Image uploaded and classified: {}", savedImage.getId());
-        return imageDto;
+
+        return convertToDto(savedImage);
     }
 
     private PredictionResponseDTO sendImageToDjangoServer(byte[] imageBytes, String filename) throws IOException {
-        // 이미지 파일을 MultipartBody로 구성
         RequestBody fileBody = RequestBody.create(imageBytes, MediaType.parse("image/jpeg"));
 
-        // Multipart request body
         MultipartBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("image", filename, fileBody)
                 .build();
 
-        // Request 객체 생성
         Request request = new Request.Builder()
                 .url("http://localhost:8000/api/classify/")
                 .post(requestBody)
                 .build();
 
-        // 요청 실행
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 throw new IOException("Unexpected code " + response);
             }
 
-            // 응답 바디를 String으로 읽기
             String responseBody = response.body().string();
             log.info("responseBody : " + responseBody);
 
-            // 응답을 PredictionResponseDTO 객체로 변환
             return objectMapper.readValue(responseBody, PredictionResponseDTO.class);
         }
     }
@@ -125,7 +116,8 @@ public class ImageService {
         dto.setId(image.getId());
         dto.setFileName(image.getFileName());
         dto.setUserId(image.getUserId());
-        // 분류 결과는 여기서 설정하지 않음 (uploadAndClassifyImage에서 설정)
+        dto.setPredictedClassLabel(image.getPredictedClassLabel());
+        dto.setConfidence(image.getConfidence());
         return dto;
     }
 }

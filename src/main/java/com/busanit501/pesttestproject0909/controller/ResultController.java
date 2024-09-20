@@ -41,6 +41,9 @@ public class ResultController {
             ImageDto image = imageService.getImageById(imageId);
             ReportDto report = reportService.getReportById(reportId);
 
+            logger.info("Retrieved image: {}", image);
+            logger.info("Retrieved report: {}", report);
+
             String predictedClassLabel = image.getPredictedClassLabel();
             String koreanLabel = (predictedClassLabel != null && !predictedClassLabel.isEmpty())
                     ? translateToKorean(predictedClassLabel)
@@ -53,7 +56,7 @@ public class ResultController {
             model.addAttribute("imageName", image.getFileName());
             model.addAttribute("reportAnalysis", report.getAnalysisResult());
 
-            logger.info("Result retrieved successfully. Korean label: {}, Confidence: {}", koreanLabel, confidence);
+            logger.info("Result processed. Korean label: {}, Confidence: {}", koreanLabel, confidence);
 
             return "aiImage/result";
         } catch (Exception e) {
@@ -75,7 +78,6 @@ public class ResultController {
         map.put("politus", "벼멸구");
         map.put("potatobeetle", "감자잎벌레");
         map.put("tephritidae", "과실파리");
-        // 필요에 따라 더 많은 번역을 추가할 수 있습니다.
         return map;
     }
 }

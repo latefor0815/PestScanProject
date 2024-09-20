@@ -29,5 +29,9 @@ public class Report {
     @Column
     private String analysisResult;
 
-    // getters, setters, constructors
+    @Column
+    private String predictedClassLabel;
+
+    @Column
+    private Double confidence;
 }

@@ -7,13 +7,11 @@ import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/reports")
@@ -25,7 +23,9 @@ public class ReportController {
     private ReportService reportService;
 
     @GetMapping({"/list", "/my-reports"})
-    public String listReports(Model model, HttpSession session) {
+    public String listReports(@RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "15") int size,
+                              Model model, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) {
             logger.warn("User not logged in, redirecting to login page");
@@ -35,15 +35,19 @@ public class ReportController {
         logger.info("Logged in user ID: {}", loggedInUser.getId());
 
         try {
-            List<ReportDto> reports = reportService.getReportsByUserId(loggedInUser.getId());
-            logger.info("Retrieved {} reports for user ID: {}", reports.size(), loggedInUser.getId());
-            for (ReportDto report : reports) {
-                logger.info("Report: {}", report);
+            Page<ReportDto> reportPage = reportService.getReportsPaginated(loggedInUser.getId(), page, size);
+            logger.info("Retrieved {} reports for user ID: {}", reportPage.getContent().size(), loggedInUser.getId());
+
+            for (ReportDto report : reportPage.getContent()) {
+                logger.info("Report: {}, Analysis Result: {}", report, report.getFormattedAnalysisResult());
             }
 
-            model.addAttribute("reports", reports);
+            model.addAttribute("reports", reportPage.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", reportPage.getTotalPages());
+            model.addAttribute("totalItems", reportPage.getTotalElements());
 
-            if (reports.isEmpty()) {
+            if (reportPage.isEmpty()) {
                 logger.info("No reports found for user");
                 model.addAttribute("message", "현재 등록된 리포트가 없습니다.");
             }
@@ -98,7 +102,7 @@ public class ReportController {
         }
     }
 
-    @PostMapping("/delete/{id}")  // @DeleteMapping 대신 @PostMapping 사용
+    @PostMapping("/delete/{id}")
     public String deleteReport(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) {

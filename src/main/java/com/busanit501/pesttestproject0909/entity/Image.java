@@ -1,12 +1,7 @@
 package com.busanit501.pesttestproject0909.entity;
 
-import jakarta.persistence.*;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
 
 @Document(collection = "images")
 public class Image {
@@ -15,6 +10,8 @@ public class Image {
     private String fileName;
     private String userId;
     private byte[] data;
+    private String predictedClassLabel;
+    private double confidence;
 
     public Image() {}
 
@@ -55,5 +52,21 @@ public class Image {
 
     public void setData(byte[] data) {
         this.data = data;
+    }
+
+    public String getPredictedClassLabel() {
+        return predictedClassLabel;
+    }
+
+    public void setPredictedClassLabel(String predictedClassLabel) {
+        this.predictedClassLabel = predictedClassLabel;
+    }
+
+    public double getConfidence() {
+        return confidence;
+    }
+
+    public void setConfidence(double confidence) {
+        this.confidence = confidence;
     }
 }

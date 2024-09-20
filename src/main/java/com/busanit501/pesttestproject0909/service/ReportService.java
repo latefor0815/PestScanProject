@@ -12,8 +12,12 @@ import com.busanit501.pesttestproject0909.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +37,12 @@ public class ReportService {
 
     @Autowired
     private InsectRepository insectRepository;
+
+    public Page<ReportDto> getReportsPaginated(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Report> reportPage = reportRepository.findByUserId(userId, pageable);
+        return reportPage.map(this::toReportDto);
+    }
 
     public List<ReportDto> getReportsByUserId(Long userId) {
         logger.info("Fetching reports for user ID: {}", userId);
@@ -144,7 +154,9 @@ public class ReportService {
                 report.getUser().getId(),
                 image.getFileName(),
                 report.getInsect().getName(),
-                report.getAnalysisResult()
+                report.getAnalysisResult(),
+                report.getPredictedClassLabel(),
+                report.getConfidence()
         );
     }
 }
