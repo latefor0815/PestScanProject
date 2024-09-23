@@ -2,54 +2,56 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title}">Pest Analysis Platform</title>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${title}">Pest Analysis Platform</title>
 
-    <!-- 공통 CSS 파일 -->
-    <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}">
-  </head>
-  <body>
-    <!-- 공통 헤더 -->
-    <header>
-      <nav>
-        <!-- 좌측 최상단에 위치할 Home -->
-        <div class="nav-left">
-          <a href="/" th:href="@{/}">Home</a>
-        </div>
+  <!-- 공통 CSS 파일 -->
+  <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<!-- 공통 헤더 -->
+<header>
+  <div>
+    <nav>
+      <div class="nav-left">
+        <a th:href="@{/}">Home</a>
+      </div>
 
-        <!-- 중앙에 위치할 Upload Image, About, Contact, Insects, Reports -->
-        <div class="nav-center">
-          <a href="/images/upload" th:href="@{/images/upload}">Upload Image</a>
-          <a href="/about" th:href="@{/about}">About</a>
-          <a href="/contact" th:href="@{/contact}">Contact</a>
-          <a href="/insects" th:href="@{/insects}">Insects</a>
-          <a href="/reports/list" th:href="@{/reports/list}">Reports</a>
-        </div>
+      <div class="nav-center">
+        <a th:href="@{/images/upload}">Upload Image</a>
+        <a th:href="@{/about}">About</a>
+        <a th:href="@{/contact}">Contact</a>
+        <a th:href="@{/insects}">Insects</a>
+        <a th:href="@{/reports/list}">Reports</a>
+      </div>
 
-        <!-- 우측 최상단에 위치할 Login, Sign Up -->
-        <div class="nav-right">
-          <a th:if="${session.loggedInUser == null}" href="/users/login" th:href="@{/users/login}">Login</a>
-          <a th:if="${session.loggedInUser == null}" href="/users/signup" th:href="@{/users/signup}">Sign Up</a>
-          <a th:if="${session.loggedInUser != null}" href="/users/logout" th:href="@{/users/logout}">Logout</a>
-          <span th:if="${session.loggedInUser != null}" th:text="${session.loggedInUser.username}">Username</span>
-        </div>
-      </nav>
-    </header>
+      <div class="nav-right">
+        <th:block th:if="${session.loggedInUser == null}">
+          <a th:href="@{/users/login}">Login</a>
+          <a th:href="@{/users/signup}">Sign Up</a>
+        </th:block>
+        <th:block th:if="${session.loggedInUser != null}">
+          <span th:text="${session.loggedInUser.email + '님 환영합니다'}"></span>
+          <a th:href="@{/users/logout}">Logout</a>
+        </th:block>
+      </div>
+    </nav>
+  </div>
+</header>
 
-    <!-- 본문 영역 -->
-    <main>
-      <div th:replace="${content}">Content will be here</div>
-    </main>
+<main role="main">
+  <!-- 여기서 index.html에서 정의한 content fragment를 호출 -->
+  <div th:replace="index :: content"></div>
+</main>
 
-    <!-- 공통 푸터 -->
-    <footer>
-      <p>&copy; 2024 Pest Analysis Platform</p>
-      <p>Contact us at: info@pestanalysis.com</p>
-    </footer>
+<footer>
+  <p>© 2024 Pest Analysis Platform</p>
+  <p>Contact us at: info@pestanalysis.com</p>
+</footer>
 
-    <!-- 공통 JavaScript 파일 -->
-    <script src="/js/script.js" th:src="@{/js/script.js}"></script>
-  </body>
+<!-- 공통 JavaScript 파일 -->
+<script src="/js/script.js" th:src="@{/js/script.js}"></script>
+</body>
 </html>

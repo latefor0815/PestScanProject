@@ -2,11 +2,14 @@ package com.busanit501.pesttestproject0909.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 
 @Entity
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // 기본 키 생성 전략

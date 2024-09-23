@@ -28,8 +28,8 @@ public class LoginController {
         User user = userService.loginUser(loginDto.getEmail(), loginDto.getPassword());
         if (user != null) {
             session.setAttribute("loggedInUser", user);
-            System.out.println("로그인 성공: " + user.getEmail() + ", Session ID: " + session.getId());
-            System.out.println("세션 속성: " + session.getAttribute("loggedInUser"));
+            // 세션에 저장된 유저 정보 확인
+            System.out.println("로그인 후 세션에 저장된 사용자: " + session.getAttribute("loggedInUser"));
             return "redirect:/";
         } else {
             model.addAttribute("error", "이메일 또는 비밀번호가 잘못되었습니다.");
